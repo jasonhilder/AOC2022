@@ -3,9 +3,17 @@
 version = 3
 
 [[package]]
+name = "camp_cleanup"
+version = "0.1.0"
+
+[[package]]
 name = "counting_calories"
 version = "0.1.0"
 
 [[package]]
 name = "rps"
+version = "0.1.0"
+
+[[package]]
+name = "rucksack_prob"
 version = "0.1.0"
