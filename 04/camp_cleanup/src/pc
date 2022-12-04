@@ -1,0 +1,57 @@
+use std::fs;
+
+fn main() {
+    let mut dups = 0;
+    let input = fs::read_to_string("./04/camp_cleanup/puzzle_input.txt").expect("failed to read file.");
+    let section_pairs: Vec<&str> = input.split("\n").filter(|&x| !x.is_empty()).collect();
+
+    println!("{:#?}", section_pairs);
+
+
+    for pair in section_pairs {
+        let mut p1: Option<(usize, usize)> = None;
+        let mut p2: Option<(usize, usize)> = None;
+        let pairs = pair.split(",");
+
+        for (i,p) in pairs.enumerate() {
+            let mut split = p.split("-");
+
+            let my_tuple = (
+                split.next().unwrap().parse::<usize>().unwrap(),
+                split.next().unwrap().parse::<usize>().unwrap()
+            );
+
+
+            if i == 0 {
+                p1 = Some(my_tuple);
+            } else {
+                p2 = Some(my_tuple);
+            }
+
+
+        }
+
+
+        if p1.is_some() && p2.is_some() {
+            let p_1 = p1.unwrap();
+            let p_2 = p2.unwrap();
+
+            if p_1.0 >= p_2.0 && p_1.1 <= p_2.1 {
+                dups += 1
+            } else if p_1.0 <= p_2.0 && p_1.1 >= p_2.1 {
+                dups += 1
+            }
+
+            if p_1.1 >= p_2.0 && p_1.1 < p_2.1 {
+                dups += 1;
+                println!("oo: {:?} - {:?}", p_1, p_2)
+            } else if p_1.1 <= p_2.0 && p_1.1 > p_2.1 {
+                dups += 1;
+            }
+        }
+
+    }
+
+    println!("dups: {}", dups);
+
+}
