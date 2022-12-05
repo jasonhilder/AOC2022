@@ -3,6 +3,7 @@ members=[
 "01/counting_calories",
 "02/rps",
 "03/rucksack_prob",
-"04/camp_cleanup"
+"04/camp_cleanup",
+"05/supply_stacks"
 ]
 excludes=[]
