@@ -1,7 +1,8 @@
 use std::fs;
 
 fn main() {
-    let input = fs::read_to_string("./06/tuning_trouble/puzzle_input.txt").expect("failed to read file.");
+    let input =
+        fs::read_to_string("./06/tuning_trouble/puzzle_input.txt").expect("failed to read file.");
     let mut count = 0;
     let mut sop = false;
     let mut marker = String::new();
@@ -11,7 +12,7 @@ fn main() {
         if marker.contains(c) {
             // to remove all character before duplicate
             // split current string at the duplicated character (c)
-            // aksdk == [ak][skdk]
+            // aksdk == [ak][sdk]
             marker = marker.split(c).last().unwrap().to_string();
             marker.push(c);
         } else {
@@ -27,7 +28,7 @@ fn main() {
         if marker.len() == 14 {
             println!("marker found!: {}", marker);
             println!("{}", count);
-            return
+            return;
         }
     }
 }

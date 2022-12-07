@@ -5,6 +5,7 @@ members=[
 "03/rucksack_prob",
 "04/camp_cleanup",
 "05/supply_stacks",
-"06/tuning_trouble"
+"06/tuning_trouble",
+"07/no_space_left"
 ]
 excludes=[]
