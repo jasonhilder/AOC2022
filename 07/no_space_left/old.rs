@@ -1,4 +1,5 @@
 use std::cell::{RefCell, RefMut};
+use std::collections::HashMap;
 use std::fs;
 use std::rc::Rc;
 
@@ -9,7 +10,6 @@ struct TreeNode {
     pub value: Option<Node>,
     pub children: Vec<Rc<RefCell<TreeNode>>>,
     pub name: String,
-    pub parent: Option<Rc<RefCell<TreeNode>>>,
 }
 
 impl TreeNode {
@@ -18,7 +18,6 @@ impl TreeNode {
             value: None,
             children: Vec::new(),
             name: name.to_string(),
-            parent: None,
         }
     }
 
@@ -99,8 +98,10 @@ fn main() {
     }
 
     //println!("{:#?}", tokens);
+
     let mut peekable_t = tokens.iter().peekable();
     let mut current_dir = String::new();
+    // let mut instructions: HashMap<String, Node> = HashMap::new();
     let mut v_instructions = vec![];
 
     while let Some(tkn) = peekable_t.next() {
@@ -108,10 +109,15 @@ fn main() {
             "cd" => {
                 let branch = peekable_t.next().unwrap().clone();
                 current_dir = branch.to_string();
+                if branch == ".." {
+                    // instructions.insert(current_dir.to_string(), vec![]);
+                }
+
                 v_instructions.push((0 as usize, current_dir.to_string()));
             }
             "ls" => {
                 // now map over directory contents
+                // let mut files = vec![];
                 while let Some(dir_tkn) = peekable_t.next() {
                     match dir_tkn.as_str() {
                         "$" => break,
@@ -122,32 +128,21 @@ fn main() {
                             if file_size.is_ok() {
                                 let file_name = peekable_t.next().unwrap().clone();
                                 v_instructions.push((vfile_size.unwrap(), file_name.to_string()));
+                                // files.push((file_size.unwrap(), file_name.to_string()));
                             }
                         }
                     }
                 }
+                // instructions.insert(current_dir.to_string(), files);
             }
+
             _ => (),
         }
     }
 
+    // println!("{:#?}", instructions);
     println!("{:#?}", v_instructions);
+
     let root = TreeNode::new("/");
-    let mut current = Rc::new(RefCell::new(root));
-
-    for i in v_instructions {
-        // we are out of the root
-        if i.0 != 0 && i.1 != "/" {
-            let child = current.borrow_mut().add_folder(&i.1);
-            //current = Rc::new(child);
-
-            current = child;
-        }
-
-        if i.0 > 0 {
-            current.borrow_mut().add_file((i.0, i.1.to_string()));
-        }
-
-        break;
-    }
+    for i in v_instructions {}
 }
