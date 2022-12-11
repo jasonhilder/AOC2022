@@ -1,15 +1,13 @@
-use std::cell::{RefCell, RefMut};
 use std::fs;
-use std::rc::Rc;
 
 type Node = Vec<(usize, String)>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct TreeNode {
     pub value: Option<Node>,
-    pub children: Vec<Rc<RefCell<TreeNode>>>,
+    pub children: Vec<Box<TreeNode>>,
     pub name: String,
-    pub parent: Option<Rc<RefCell<TreeNode>>>,
+    pub parent: Option<Box<TreeNode>>,
 }
 
 impl TreeNode {
@@ -22,15 +20,15 @@ impl TreeNode {
         }
     }
 
-    pub fn add_child(&mut self, node: TreeNode) -> RefMut<TreeNode> {
+    pub fn add_child(&mut self, node: TreeNode) -> Box<TreeNode> {
         let previous = self.children.len();
-        self.children.push(Rc::new(RefCell::new(node)));
+        self.children.push(Box::new(node));
 
-        self.children[previous].borrow_mut()
+        self.children[previous]
     }
 
     // a nicer interface to add_child
-    fn add_folder(&mut self, name: &str) -> RefMut<TreeNode> {
+    fn add_folder(&mut self, name: &str) -> Box<TreeNode> {
         let child = TreeNode::new(name);
 
         self.add_child(child)
@@ -47,7 +45,13 @@ impl TreeNode {
         }
     }
 
-    pub fn folder_size(&self) -> usize {
+    pub fn get_parent(&mut self) -> Box<TreeNode> {
+        let p = self.to_owned().parent.unwrap();
+
+        p
+    }
+
+    pub fn _folder_size(&self) -> usize {
         if self.value.is_some() && self.value.as_ref().unwrap().len() > 0 {
             let items = self.value.as_ref().unwrap();
             let mut out = 0;
@@ -62,19 +66,23 @@ impl TreeNode {
         }
     }
 
-    pub fn total_folder_size(&self) -> usize {
-        let mut out = 0;
+    pub fn _total_folder_size(&self) -> usize {
+        let out = 0;
 
-        out += self.folder_size();
+        // out += self.folder_size();
 
-        if self.children.len() > 0 {
-            for child in &self.children {
-                // calculate all nodes child nodes sizes
-                out += child.borrow().total_folder_size();
-            }
-        }
+        // if self.children.len() > 0 {
+        //     for child in &self.children {
+        //         // calculate all nodes child nodes sizes
+        //         out += child.total_folder_size();
+        //     }
+        // }
 
         out
+    }
+
+    pub fn _print_tree(&self) {
+        println!("{:#?}", self.parent.as_ref().unwrap().children.first());
     }
 }
 
@@ -100,15 +108,13 @@ fn main() {
 
     //println!("{:#?}", tokens);
     let mut peekable_t = tokens.iter().peekable();
-    let mut current_dir = String::new();
     let mut v_instructions = vec![];
 
     while let Some(tkn) = peekable_t.next() {
         match tkn.as_str() {
             "cd" => {
                 let branch = peekable_t.next().unwrap().clone();
-                current_dir = branch.to_string();
-                v_instructions.push((0 as usize, current_dir.to_string()));
+                v_instructions.push((0 as usize, branch.to_string()));
             }
             "ls" => {
                 // now map over directory contents
@@ -131,23 +137,39 @@ fn main() {
         }
     }
 
-    println!("{:#?}", v_instructions);
+    // println!("{:#?}", v_instructions);
     let root = TreeNode::new("/");
-    let mut current = Rc::new(RefCell::new(root));
+    let mut current: Box<TreeNode> = Box::new(root);
 
+    let mut count = 0;
     for i in v_instructions {
-        // we are out of the root
-        if i.0 != 0 && i.1 != "/" {
-            let child = current.borrow_mut().add_folder(&i.1);
-            //current = Rc::new(child);
+        println!("test: {:?}", i.1);
 
-            current = child;
+        count += 1;
+
+        // we are out of the root
+        if i.0 == 0 && i.1 != "/" {
+            if i.1 == ".." {
+                if current.parent.is_some() {
+                    //println!("gotta go back!");
+                    // println!("{:#?}", current);
+
+                    current = current.get_parent();
+                }
+            } else {
+                let mut child = current.add_folder(&i.1);
+
+                child.parent = Some(current);
+
+                current = child;
+            }
         }
 
         if i.0 > 0 {
-            current.borrow_mut().add_file((i.0, i.1.to_string()));
+            println!("adding file");
+            current.add_file((i.0, i.1.to_string()));
         }
-
-        break;
     }
+
+    println!("{:#?}", current);
 }
