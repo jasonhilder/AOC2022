@@ -51,51 +51,53 @@ fn check_surroundings(trees: &Vec<Vec<u64>>, pos: (usize, usize)) -> bool {
     // println!("ct: {}", current_tree);
     // println!("px: {:#?} ", (pos_x, pos_y));
 
-    // left to pos
-    for j in 0..row_length - 1 {
+    // pos_x to left
+    for j in (0..pos_x).rev() {
         // dont go past the point we are checking
-        if j < pos_x {
-            println!("here");
-            if &trees[pos_y][j] >= &current_tree {
-                println!("failed");
-                return false;
-            }
+        if &trees[pos_y][j] >= &current_tree {
+            println!("left failed");
+            break;
+        } else {
+            println!("visible left");
+            return true;
         }
     }
 
-    //right to pos
-    for jj in (0..row_length - 1).rev() {
-        // dont go past the point we are checkingœ
-        if jj > pos_x {
-            println!("here2");
-            if &trees[pos_y][jj] >= &current_tree {
-                return false;
-            }
+    // pos to right
+    for j in (pos_x + 1)..=row_length - 1 {
+        // dont go past the point we are checking
+        if &trees[pos_y][j] >= &current_tree {
+            println!("right failed");
+            break;
+        } else {
+            println!("visible right");
+            return true;
         }
     }
 
-    // top to pos
-    for k in 0..(trees.len() - 1) {
-        // dont go past the point we are checkingœ
-        if k > pos_y {
-            println!("here3");
-            if &trees[k][pos_x] >= &current_tree {
-                return false;
-            }
+    // pos_y to top
+    for k in (0..pos_y + 1).rev() {
+        // dont go past the point we are checking
+        if &trees[k][pos_x] >= &current_tree {
+            println!("top failed");
+            break;
+        } else {
+            println!("visible top");
+            return true;
         }
     }
 
-    // bottom to pos
-    for kk in (0..trees.len() - 1).rev() {
-        // dont go past the point we are checkingœ
-        if kk > pos_y {
-            println!("here4");
-            if &trees[kk][pos_x] >= &current_tree {
-                return false;
-            }
+    // pos_y to bot
+    for k in (pos_y + 1)..=trees.len() - 1 {
+        // dont go past the point we are checking
+        if &trees[k][pos_x] >= &current_tree {
+            println!("bottom failed");
+            break;
+        } else {
+            println!("visible bottom");
+            return true;
         }
     }
 
-    println!("passed");
-    return true;
+    false
 }
