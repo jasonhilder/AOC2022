@@ -51,34 +51,51 @@ fn check_surroundings(trees: &Vec<Vec<u64>>, pos: (usize, usize)) -> bool {
     // println!("ct: {}", current_tree);
     // println!("px: {:#?} ", (pos_x, pos_y));
 
+    // left to pos
     for j in 0..row_length - 1 {
-        if &trees[pos_y][j] < current_tree && (j, pos_y) != pos {
-            println!("passed!");
-            return true;
+        // dont go past the point we are checking
+        if j < pos_x {
+            println!("here");
+            if &trees[pos_y][j] >= &current_tree {
+                println!("failed");
+                return false;
+            }
         }
     }
 
-    for j in (0..row_length - 1).rev() {
-        if &trees[pos_y][j] < current_tree && (j, pos_y) != pos {
-            println!("passed!");
-            return true;
+    //right to pos
+    for jj in (0..row_length - 1).rev() {
+        // dont go past the point we are checkingœ
+        if jj > pos_x {
+            println!("here2");
+            if &trees[pos_y][jj] >= &current_tree {
+                return false;
+            }
         }
     }
 
-    for k in 0..trees.len() - 1 {
-        if &trees[k][pos_x] < current_tree && (pos_x, k) != pos {
-            println!("passed!");
-            return true;
+    // top to pos
+    for k in 0..(trees.len() - 1) {
+        // dont go past the point we are checkingœ
+        if k > pos_y {
+            println!("here3");
+            if &trees[k][pos_x] >= &current_tree {
+                return false;
+            }
         }
     }
 
-    for k in (0..trees.len() - 1).rev() {
-        if &trees[k][pos_x] < current_tree && (pos_x, k) != pos {
-            println!("passed!");
-            return true;
+    // bottom to pos
+    for kk in (0..trees.len() - 1).rev() {
+        // dont go past the point we are checkingœ
+        if kk > pos_y {
+            println!("here4");
+            if &trees[kk][pos_x] >= &current_tree {
+                return false;
+            }
         }
     }
 
-    println!("failed!");
-    false
+    println!("passed");
+    return true;
 }
