@@ -7,6 +7,7 @@ members=[
 "05/supply_stacks",
 "06/tuning_trouble",
 "07/no_space_left",
-"08/treetop"
+"08/treetop",
+"09/rope_bridge"
 ]
 excludes=[]
